@@ -158,10 +158,10 @@ We can see that most of the stocks had an overall increase in return in 2017. Th
 
 ## Summary
 
-Advantages and disadvantages or refactoring code:
+**Advantages and disadvantages or refactoring code:**
 
 Some advantage of refactoring code is having it run faster for large data sets, use less memory, and present code that is easier to understand. A disadvantage is that it is time consuming and could result in errors if not done correctly
 
-Advantages and disadvantages of the original and refactored VBA script:
+**Advantages and disadvantages of the original and refactored VBA script:**
 
 When we originally wrote the VBA code for Steve we had the For loop going off the tickers variable which is defined as a string. Strings take up more memory, so I’m assuming by refactoring our code to use the tickerindex variable which is set as an integer, the code will run faster, which it did. Our refactored code will definitely be better if Steve decides he wants to analyze more tickers than just the 12 we analyzed. One advantage of the original script is that there was one less For loop just making the code easier to read for a beginner in VBA. A disadvantage is just the extra time it took to refactor, and some of the errors made along the way. For the amount of time saved in running code (less than a second) it may not have been worth the hours it took to complete the refactor. In the future it would be good to understand how the codes future intended use before spending time refactoring. 
