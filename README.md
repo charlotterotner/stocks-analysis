@@ -1,1 +1,147 @@
 # stocks-analysis
+
+## Overview of Project
+
+The purpose of this project was to refacator the VBA code that we had originally written for Steve so it can be potentially used at a larger scale to examine more than 12 stocks and still run quickly. When we originally wrote the VBA code for Steve we had the For loop going off the tickers variable which is defined as a string. Strings take up more memory, so I’m assuming by refactoring our code to use tickerindex variable which is set as an integer, the code will run faster. 
+        
+## Results
+
+### Refactor Overview
+
+To refactor the code we started by creating a tickerindex and setting it equal to 0. Before this we intialized an array of tickers, activated the worksheet for the year we wanted run the macro on, and got the number of rows to loop over. 
+```
+    'Initialize array of all tickers
+    Dim tickers(12) As String
+    
+    tickers(0) = "AY"
+    tickers(1) = "CSIQ"
+    tickers(2) = "DQ"
+    tickers(3) = "ENPH"
+    tickers(4) = "FSLR"
+    tickers(5) = "HASI"
+    tickers(6) = "JKS"
+    tickers(7) = "RUN"
+    tickers(8) = "SEDG"
+    tickers(9) = "SPWR"
+    tickers(10) = "TERP"
+    tickers(11) = "VSLR"
+    
+    'Activate data worksheet
+    
+    Worksheets(yearValue).Activate
+    
+    'Get the number of rows to loop over
+    
+    RowCount = Cells(Rows.Count, "A").End(xlUp).Row
+    
+    '1a) Create a ticker Index
+    
+    tickerindex = 0
+    
+```
+
+Then we created our three output arrays, defined the variables and started a loop to initialize the tickerVolumes to zero
+
+```
+    '1b) Create three output arrays
+ 
+    Dim tickerVolumes(12) As Long
+    Dim tickerStartingPrices(12) As Single
+    Dim tickerEndingPrices(12)  As Single
+    
+    
+    ''2a) Create a for loop to initialize the tickerVolumes to zero.
+    
+    For i = 0 To 11
+    tickerVolumes(i) = 0
+
+
+    Next i
+    
+```
+
+We then activated our year worksheet and and created a loop to loop overall rows in the spreadsheet
+```
+    ''2b) Loop over all the rows in the spreadsheet.
+    
+        Worksheets(yearValue).Activate
+         For i = 2 To RowCount
+```
+Then we got into our if statements for the output amounts
+We wrote an if statement to increase the volume for the current ticker
+```
+      If Cells(i, 1).Value = tickers(tickerindex) Then
+        tickerVolumes(tickerindex) = tickerVolumes(tickerindex) + Cells(i, 8).Value
+        
+        End If
+```
+Then we wrote an if statement to find the starting price. This statement looked to see if the tickers(tickerindex) was the first row in the selected tickerindex
+```
+        '3b) Check if the current row is the first row with the selected tickerIndex.
+        
+               If Cells(i - 1, 1).Value <> tickers(tickerindex) And Cells(i, 1).Value = tickers(tickerindex) Then
+               
+        'If it is Then set the starting price
+
+        tickerStartingPrices(tickerindex) = Cells(i, 6).Value
+               
+        End If
+ ```
+ 
+We then did a similar if statement to find the ending price by seeing if the tickers(tickerindex) was the last row for that tickerindex we set an ending price and we also increased the ticker by 1 to repeat the loop with the next tickerindex in the series.
+```
+        '3c) check if the current row is the last row with the selected ticker
+        
+          If Cells(i + 1, 1).Value <> tickers(tickerindex) And Cells(i, 1).Value = tickers(tickerindex) Then
+          
+            'If the current row is the last row Then set the ending price price
+            
+                 tickerEndingPrices(tickerindex) = Cells(i, 6).Value
+                 
+            ' 3d If the next row’s ticker doesn’t match, increase the tickerIndex.
+            
+                  tickerindex = tickerindex + 1
+        
+            End If
+            
+            Next i
+
+```
+
+We then looped through our orrayrs to output the Ticker, Total Daily Volume, and Return. 
+code
+```
+    '4) Loop through your arrays to output the Ticker, Total Daily Volume, and Return.
+    For i = 0 To 11
+    
+        Worksheets("All Stocks Analysis").Activate
+        Cells(4 + i, 1).Value = tickers(i)
+        Cells(4 + i, 2).Value = tickerVolumes(i)
+        Cells(4 + i, 3).Value = tickerEndingPrices(i) / tickerStartingPrices(i) - 1
+        
+        
+    Next i
+```
+
+After doing the refactors described above we re-ran our code. From the timer message box we could see that the code did indeed run faster. Below are the screenshots of the timer before the refactor: 
+**2017 timer **
+ ![image description or alt text](https://raw.githubusercontent.com/charlotterotner/stocks-analysis/main/Resources/2017_first%20run.png)
+ 
+**2018 timer **
+ ![image description or alt text](https://raw.githubusercontent.com/charlotterotner/stocks-analysis/main/Resources/2018_first%20run.png)
+ 
+And after the refactor
+
+**2017 timer **
+![image description or alt text](https://raw.githubusercontent.com/charlotterotner/stocks-analysis/main/Resources/2017_first%20run.png)
+
+**2018 timer **
+![image description or alt text](https://raw.githubusercontent.com/charlotterotner/stocks-analysis/main/Resources/2017_first%20run.png)
+
+And that the refactored code is accurate since it gave the same outputs for each year that we originally saw.
+![image description or alt text](https://raw.githubusercontent.com/charlotterotner/stocks-analysis/main/Resources/2017_first%20run.png)
+
+### Analysis 
+We can see that most of the stocks had an overall increase in return in 2017. The one exception to this was ticker TERP - Steves parents should likely avoid that one. In 2018, we saw a majority of the tickers actually decrease in returns. I was surprised by this at first, but it is not too surprising after reading that 2018 was one of the worst years for stocks in 10 years. All but two stocks decreased, RUN and ENPH. After reviewing the two years of stocks I’d probably recommend ENPH as a good next choice for Steve’s parents to invest in. It was strong in 2017 and withstood a stock crash in 2018. 
+
+## Summary
